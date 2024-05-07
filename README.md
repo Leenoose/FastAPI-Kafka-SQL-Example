@@ -104,10 +104,24 @@ This is an example of how to list things you need to use the software and how to
    ```
 4. Ensure you have a PostgreSQL running. If not, use Podman or Docker to run an image.
    ```sh
-   podman run -d --name <db-name> -p 5432:5432 -e POSTGRES_PASSWORD=<mypassword> postgres:latest
-   #The command should run interchangeably with Docker
+   podman run -d --name <db-name> -p 5432:5432 -e POSTGRES_PASSWORD=<mypassword> -v /db-init-script.sql:/docker-entrypoint-initdb.d/init.sql postgres:latest
+   #The command should run interchangeably with Docker. the -v flag copies the db-init-script.sql into the container and runs it at initialization
    ```
+5. Ensure that you have a Kafka Zookeeper and Kafka Server instance running, with a topic created.
+   ```sh
+   #On your Local machine or a Kafka container
+   bin/zookeeper-server-start.sh config/zookeeper.properties
 
+   #On another terminal on your local machine or another Kafka container
+   bin/kafka-server-start.sh config/server.properties
+
+   #On another terminal (3) on your local machine or another Kafka container
+   bin/kafka-topics.sh --create --topic <event-name> --bootstrap-server localhost:9092
+   ```
+6. Run the FastAPI server
+   ```sh
+   uvicorn main:app
+   ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
