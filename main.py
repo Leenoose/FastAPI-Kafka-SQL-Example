@@ -1,8 +1,3 @@
-# reference https://github.com/toh995/fastapi-faust-example
-
-# set up faust & fastapi
-
-# use faust response to call fastapi endpoint to write to db
 
 import asyncio
 import json
@@ -41,10 +36,7 @@ async def consume():
     try:
         async for msg in consumer:
             value = json.loads(msg.value)
-            # print(
-            #     "consumed: ",
-            #     value['message']
-            # )
+
             await write_to_db(value['message'])
 
     finally:
