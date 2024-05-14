@@ -122,6 +122,33 @@ After doing so, check your database. The message that was sent in the POST reque
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## Deploying on OpenShift
+
+To deploy on Red Hat OpenShift, follow the steps as follows.
+1. Provisioning Kafka
+
+To provision a Kafka cluster, install the operator AMQ Streams. After doing so, use the Provided APIs to create a Kafka cluster. Feel free to name the cluster however you wish.
+
+2. Provision a PostgreSQL instance
+
+Simply add a Database via the Developer Catalog, and select PostgreSQL. Note that when doing so, it is important to have a PostgreSQL Connection Username, PostgreSQL Connection Password, and a PostgreSQL Database Name. These will be used in the environment variables
+
+3. Cloning the project
+
+Add the project to your OpenShift console using the git repo url (https://github.com/Leenoose/FastAPI-Kafka-SQL-Example.git). Use the default import strategy (Dockerfile) for this.
+
+Note that the build for the projet will fail. This is because the environment variables are not being set yet, and the default values (localhost) are still being used, even though they are not applicable here. To remedy this, go to Builds, look for the name of this repo (if you did not change it when adding the project), and edit the build config. There should be a section to add environment variables. Update the values as follows
+
+| Name | Value    
+| :---:   | :---: 
+| KAFKA_HOSTNAME | \<kafka-cluster-url\>   
+| DB_HOSTNAME | \<postgres-cluster-url\>
+| DB_USER | PostgreSQL Connection username
+| DB_PASSWORD | PostgreSQL Connection password
+| DB_NAME | PostgreSQL Database Name
+
+For the HOSTNAME variables, refer to the hostname you have under Administrator > Networking > Services.
+Click into the individual services and copy the value under Service routing.
 
 <!-- LICENSE -->
 ## License
