@@ -3,6 +3,7 @@ import json
 import psycopg2
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from fastapi import FastAPI
+import os
 
 from pydantic import BaseModel
 
@@ -18,8 +19,9 @@ class ProducerMessage(BaseModel):
 
 app = FastAPI()
 
-KAFKA_INSTANCE = "my-cluster-kafka-bootstrap.kafka-helloworld.svc.cluster.local:9092"
+hostname = os.environ.get('ENV_HOSTNAME', 'localhost')
 
+KAFKA_INSTANCE = hostname + ":9092"
 
 loop = asyncio.get_event_loop()
 
@@ -73,7 +75,6 @@ async def kafka_produce(msg: ProducerMessage, topicname: str):
     return response
 
 
-@app.post("/write_to_db")
 async def write_to_db(message: str):
     try:
         connection = psycopg2.connect(
@@ -90,7 +91,3 @@ async def write_to_db(message: str):
             cursor.close()
             connection.close()
             print("Conn closed successfully")
-
-
-# Explore how to deploy to openshift AMQ streams
-# High level architecture of use case.
