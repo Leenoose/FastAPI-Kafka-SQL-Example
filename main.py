@@ -19,9 +19,14 @@ class ProducerMessage(BaseModel):
 
 app = FastAPI()
 
-hostname = os.environ.get('ENV_HOSTNAME', 'localhost')
+KAKFA_HOSTNAME = os.environ.get('KAFKA_HOSTNAME', 'localhost')
 
-KAFKA_INSTANCE = hostname + ":9092"
+PSQL_DATABASE_HOSTNAME = os.environ.get('DB_HOSTNAME', 'localhost')
+PSQL_USERNAME = os.environ.get('DB_USER', 'postgres')
+PSQL_PASSWORD = os.environ.get('DB_PASSWORD', 'mypassword')
+PSQL_DATABASE_NAME = os.environ.get('DB_NAME', 'postgres')
+
+KAFKA_INSTANCE = KAKFA_HOSTNAME + ":9092"
 
 loop = asyncio.get_event_loop()
 
@@ -37,10 +42,6 @@ async def consume():
     try:
         async for msg in consumer:
             value = json.loads(msg.value)
-            # print(
-            #     "consumed: ",
-            #     value['message']
-            # )
             await write_to_db(value['message'])
 
     finally:
@@ -78,7 +79,7 @@ async def kafka_produce(msg: ProducerMessage, topicname: str):
 async def write_to_db(message: str):
     try:
         connection = psycopg2.connect(
-            user="postgres", password="mypassword", host="localhost", port="5432", database="postgres")
+            user=PSQL_USERNAME, password=PSQL_PASSWORD, host=PSQL_DATABASE_HOSTNAME, port="5432", database=PSQL_DATABASE_NAME)
         cursor = connection.cursor()
         query = f"insert into messages (message) values ('{message}')"
         cursor.execute(query)
@@ -90,4 +91,4 @@ async def write_to_db(message: str):
         if (connection):
             cursor.close()
             connection.close()
-            print("Conn closed successfully")
+            #Connection closed.
