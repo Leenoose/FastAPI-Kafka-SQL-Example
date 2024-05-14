@@ -1,4 +1,3 @@
-
 import asyncio
 import json
 import psycopg2
@@ -19,7 +18,7 @@ class ProducerMessage(BaseModel):
 
 app = FastAPI()
 
-KAFKA_INSTANCE = "localhost:9092"
+KAFKA_INSTANCE = "my-cluster-kafka-bootstrap.kafka-helloworld.svc.cluster.local:9092"
 
 
 loop = asyncio.get_event_loop()
@@ -36,7 +35,10 @@ async def consume():
     try:
         async for msg in consumer:
             value = json.loads(msg.value)
-
+            # print(
+            #     "consumed: ",
+            #     value['message']
+            # )
             await write_to_db(value['message'])
 
     finally:
@@ -88,3 +90,7 @@ async def write_to_db(message: str):
             cursor.close()
             connection.close()
             print("Conn closed successfully")
+
+
+# Explore how to deploy to openshift AMQ streams
+# High level architecture of use case.
