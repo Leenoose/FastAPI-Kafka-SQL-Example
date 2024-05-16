@@ -40,7 +40,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This is a simple project to demonstrate running a FastAPI service as a Kafka Consumer and Producer, using Kafka to write messages directly to the database.
+This is a simple project to demonstrate running a FastAPI server as a Kafka Consumer and Producer, with the FastAPI server listening to Kafka topics and writing them to the database as they come in. The functionality of the FastAPI server is to listen to messages on a specific topic, and to write the messages to a PostGreSQL database. A POST endpoint is available for the user to write messages to topics.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
