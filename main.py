@@ -43,7 +43,6 @@ async def consume():
         async for msg in consumer:
             value = json.loads(msg.value)
             await write_to_db(value['message'])
-
     finally:
         await consumer.stop()
 
@@ -92,3 +91,22 @@ async def write_to_db(message: str):
             cursor.close()
             connection.close()
             #Connection closed.
+
+@app.post("/kafka_write_twice")
+async def write_to_db_twice(message: str):
+    try:
+        connection = psycopg2.connect(
+            user=PSQL_USERNAME, password=PSQL_PASSWORD, host=PSQL_DATABASE_HOSTNAME, port="5432", database=PSQL_DATABASE_NAME)
+        cursor = connection.cursor()
+        query = f"insert into messages (message) values ('{message}')"
+        cursor.execute(query)
+        connection.commit()
+
+    except (Exception) as error:
+        print(error)
+    finally:
+        if (connection):
+            cursor.close()
+            connection.close()
+            temp = ProducerMessage(message="kafka predefined message", topic="my_topic")
+            await kafka_produce(temp, "my_topic")
